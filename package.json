@@ -1,12 +1,14 @@
 {
   "name": "karangtaruna-portal",
-  "private": true,
   "version": "3.5.0",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
+  "type": "module",
   "dependencies": {
     "chart.js": "^4.4.3",
     "firebase": "^10.14.1",
@@ -16,5 +18,9 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hot-toast": "^2.4.1"
+  },
+  "devDependencies": {
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.5"
   }
 }
