@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    /* ===============================
+       Konfigurasi dasar TypeScript/JS
+       =============================== */
+    "target": "esnext",                // Standar modern untuk JS
+    "module": "esnext",                // Gunakan sistem modul modern
+    "moduleResolution": "node",        // Resolusi seperti Node.js
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+    /* ===============================
+       Alias & Path Mapping
+       =============================== */
+    "baseUrl": ".",                    // Titik awal untuk path alias
+    "paths": {
+      "@/*": ["*"],                    // Pakai "@/..." untuk import dari root
+      "@/lib/*": ["lib/*"],            // Khusus lib Firebase, Cloudinary
+      "@/app/*": ["app/*"],            // Akses folder app Next.js
+      "@/styles/*": ["styles/*"],      // CSS atau module CSS
+      "@/components/*": ["components/*"] // (optional) kalau kamu buat komponen global
+    },
+
+    /* ===============================
+       Opsi tambahan
+       =============================== */
+    "jsx": "preserve",                 // Biarkan JSX diolah oleh Next.js
+    "allowJs": true,                   // Izinkan file JS biasa
+    "skipLibCheck": true,              // Lewati pengecekan tipe library eksternal
+    "strict": false,                   // (opsional) matikan mode strict
+    "noEmit": true                     // Jangan keluarkan file output .js/.d.ts
+  },
+  "exclude": ["node_modules", ".next", "out"],  // Folder yang diabaikan Next.js
+  "include": ["next-env.d.ts", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]  // File yang dilacak
+}
