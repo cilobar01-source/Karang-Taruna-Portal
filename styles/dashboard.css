@@ -1,7 +1,56 @@
+:root {
+  --biru: #0e4c92;
+  --biru-tua: #0b2c58;
+  --emas: #f6c445;
+  --putih: #fff;
+  --gelap: #0d1117;
+}
+
+.panel {
+  background: var(--biru-tua);
+  color: var(--putih);
+  padding: 1.8rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  margin-bottom: 2rem;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  color: var(--emas);
+  border-bottom: 2px solid var(--emas);
+  display: inline-block;
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+}
+
 .anggota-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.card {
+  background: #122d5a;
+  border-radius: 10px;
+  padding: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
 }
 
 .anggota-info {
@@ -15,22 +64,26 @@
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--emas);
+}
+
+.role-badge {
+  background: var(--emas);
+  color: var(--biru-tua);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 0.5rem;
 }
 
 .role-select {
   width: 100%;
   margin-top: 0.6rem;
   padding: 0.4rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-weight: 600;
-}
-
-.role-badge {
-  background: var(--biru);
-  color: #fff;
-  padding: 0.2rem 0.6rem;
-  display: inline-block;
   border-radius: 6px;
-  margin-top: 0.4rem;
+  border: none;
+  font-weight: 600;
+  background: #f8f8f8;
+  color: #333;
 }
