@@ -8,7 +8,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const canvasRef = useRef(null);
   const particles = useRef([]);
 
-  /* ==== THEME DETECTOR ==== */
+  /* ==== DETECT THEME ==== */
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: light)");
     const listener = () => setTheme(media.matches ? "light" : "dark");
@@ -72,7 +72,7 @@ export default function LoginPage() {
     return () => window.removeEventListener("resize", resize);
   }, [theme]);
 
-  /* ==== FIREBASE CREATE USER DOC ==== */
+  /* ==== FIREBASE USER DOC ==== */
   const ensureUserDoc = async (uid, email) => {
     const uref = doc(db, "users", uid);
     const snap = await getDoc(uref);
@@ -85,8 +85,9 @@ export default function LoginPage() {
     }
   };
 
-  /* ==== AUTH ACTIONS ==== */
+  /* ==== AUTH LOGIC ==== */
   const doLogin = async () => {
+    if (!email || !pass) return toast.error("Isi email & kata sandi!");
     setLoading(true);
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, pass);
@@ -94,13 +95,14 @@ export default function LoginPage() {
       toast.success("Berhasil masuk ✅");
       window.location.href = "/dashboard";
     } catch (e) {
-      toast.error(e.message);
+      toast.error("Gagal login: " + e.message);
     } finally {
       setLoading(false);
     }
   };
 
   const doRegister = async () => {
+    if (!email || !pass) return toast.error("Isi email & kata sandi!");
     setLoading(true);
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, pass);
@@ -108,23 +110,23 @@ export default function LoginPage() {
       toast.success("Pendaftaran berhasil 🎉");
       window.location.href = "/dashboard";
     } catch (e) {
-      toast.error(e.message);
+      toast.error("Gagal daftar: " + e.message);
     } finally {
       setLoading(false);
     }
   };
 
   const doReset = async () => {
-    if (!email) return toast("Isi email dulu");
+    if (!email) return toast("Isi email dulu!");
     try {
       await sendPasswordResetEmail(auth, email);
       toast.success("Link reset dikirim ke email 📧");
     } catch (e) {
-      toast.error(e.message);
+      toast.error("Gagal kirim reset: " + e.message);
     }
   };
 
-  /* ==== COLOR THEMES ==== */
+  /* ==== COLOR SCHEME ==== */
   const color = {
     gold: theme === "dark" ? "#f6c445" : "#c49a1b",
     bgTop:
@@ -137,8 +139,8 @@ export default function LoginPage() {
         : "rgba(255,250,245,1)",
     card:
       theme === "dark"
-        ? "rgba(17,25,40,0.8)"
-        : "rgba(255,255,255,0.8)",
+        ? "rgba(17,25,40,0.85)"
+        : "rgba(255,255,255,0.9)",
     border:
       theme === "dark"
         ? "1px solid rgba(246,196,69,0.4)"
@@ -159,6 +161,7 @@ export default function LoginPage() {
         color: theme === "dark" ? "#fff" : "#1e1e1e",
       }}
     >
+      <Toaster position="top-center" />
       <canvas
         ref={canvasRef}
         style={{
@@ -167,7 +170,7 @@ export default function LoginPage() {
           zIndex: 0,
           background: "transparent",
         }}
-      ></canvas>
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -181,7 +184,7 @@ export default function LoginPage() {
           borderRadius: "20px",
           background: color.card,
           boxShadow:
-            "0 10px 40px rgba(0,0,0,0.3), 0 0 20px rgba(246,196,69,0.1)",
+            "0 10px 40px rgba(0,0,0,0.3), 0 0 20px rgba(246,196,69,0.15)",
           border: color.border,
           backdropFilter: "blur(10px)",
         }}
@@ -197,13 +200,13 @@ export default function LoginPage() {
             marginBottom: "0.5rem",
           }}
         >
-          Portal Karang Taruna
+          Portal KARTEJI
         </motion.h1>
         <p
           className="note"
           style={{ textAlign: "center", marginBottom: "1.5rem" }}
         >
-          RT01/RW08 Cilosari Barat - Kemijen
+          RT01/RW08 Cilosari Barat – Kemijen, Semarang Timur
         </p>
 
         <input
@@ -211,12 +214,14 @@ export default function LoginPage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          style={inputStyle}
         />
         <input
           placeholder="Kata sandi"
           type="password"
           value={pass}
           onChange={(e) => setPass(e.target.value)}
+          style={inputStyle}
         />
 
         <div
@@ -229,20 +234,28 @@ export default function LoginPage() {
             justifyContent: "center",
           }}
         >
-          <button className="btn btn-primary" onClick={doLogin} disabled={loading}>
+          <button
+            style={btnPrimary(color.gold)}
+            onClick={doLogin}
+            disabled={loading}
+          >
             {loading ? "⏳ ..." : "Masuk"}
           </button>
-          <button className="btn btn-ghost" onClick={doRegister} disabled={loading}>
+          <button
+            style={btnGhost(color.gold)}
+            onClick={doRegister}
+            disabled={loading}
+          >
             Daftar
           </button>
         </div>
 
         <button
-          className="btn btn-ghost"
           style={{
+            ...btnGhost(color.gold),
             width: "100%",
             marginTop: "1rem",
-            background: "rgba(255,255,255,0.06)",
+            fontSize: "0.9rem",
           }}
           onClick={doReset}
           disabled={loading}
@@ -258,9 +271,42 @@ export default function LoginPage() {
             opacity: 0.7,
           }}
         >
-          © 2025 Karang Taruna Cilosari Barat
+          © 2025 Karang Taruna Cilosari Barat RT01/RW08
         </p>
       </motion.div>
     </main>
   );
 }
+
+/* ==== INLINE STYLES ==== */
+const inputStyle = {
+  width: "100%",
+  padding: "0.7rem 1rem",
+  borderRadius: "10px",
+  border: "1px solid rgba(255,255,255,0.2)",
+  background: "rgba(255,255,255,0.05)",
+  color: "#fff",
+  marginBottom: "0.8rem",
+  fontSize: "0.95rem",
+  outline: "none",
+};
+
+const btnPrimary = (gold) => ({
+  background: gold,
+  border: "none",
+  color: "#0b132b",
+  padding: "0.6rem 1.4rem",
+  fontWeight: 700,
+  borderRadius: "8px",
+  cursor: "pointer",
+});
+
+const btnGhost = (gold) => ({
+  background: "rgba(255,255,255,0.08)",
+  border: `1px solid ${gold}`,
+  color: gold,
+  padding: "0.6rem 1.4rem",
+  fontWeight: 600,
+  borderRadius: "8px",
+  cursor: "pointer",
+});
