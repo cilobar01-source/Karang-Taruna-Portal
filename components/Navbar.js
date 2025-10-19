@@ -5,12 +5,10 @@ import { motion } from "framer-motion";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-
   const toggleMenu = () => setOpen(!open);
 
   return (
     <nav
-      className="navbar"
       style={{
         background: "linear-gradient(90deg, #0b132b, #182848)",
         color: "#f6c445",
@@ -22,7 +20,6 @@ export default function Navbar() {
       }}
     >
       <div
-        className="nav-container"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -32,49 +29,26 @@ export default function Navbar() {
         }}
       >
         {/* Logo */}
-        <Link href="/" className="nav-logo" style={{ fontWeight: 700 }}>
+        <Link href="/" style={{ fontWeight: 700, fontSize: "1.2rem" }}>
           KARTEJI
         </Link>
 
-        {/* Hamburger Icon */}
+        {/* Hamburger */}
         <button
           onClick={toggleMenu}
-          className="hamburger"
           style={{
             background: "none",
             border: "none",
-            cursor: "pointer",
             color: "#f6c445",
-            fontSize: "1.5rem",
-            display: "block",
+            fontSize: "1.6rem",
+            cursor: "pointer",
           }}
         >
           ☰
         </button>
-
-        {/* Menu (Desktop) */}
-        <div
-          className="nav-links"
-          style={{
-            display: "none",
-          }}
-        >
-          <Link href="/#pengumuman" className="nav-item">
-            Pengumuman
-          </Link>
-          <Link href="/#berita" className="nav-item">
-            Berita
-          </Link>
-          <Link href="/#umkm" className="nav-item">
-            UMKM
-          </Link>
-          <Link href="/login" className="nav-item">
-            Login
-          </Link>
-        </div>
       </div>
 
-      {/* Menu (Mobile) */}
+      {/* Mobile Menu */}
       {open && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -87,19 +61,19 @@ export default function Navbar() {
             borderTop: "1px solid rgba(246,196,69,0.3)",
           }}
         >
-          <Link href="/#pengumuman" className="nav-item" onClick={toggleMenu}>
+          <Link href="/#pengumuman" onClick={toggleMenu}>
             📢 Pengumuman
           </Link>
           <br />
-          <Link href="/#berita" className="nav-item" onClick={toggleMenu}>
+          <Link href="/#berita" onClick={toggleMenu}>
             📰 Berita
           </Link>
           <br />
-          <Link href="/#umkm" className="nav-item" onClick={toggleMenu}>
+          <Link href="/#umkm" onClick={toggleMenu}>
             🏪 UMKM
           </Link>
           <br />
-          <Link href="/login" className="nav-item" onClick={toggleMenu}>
+          <Link href="/login" onClick={toggleMenu}>
             🔑 Login
           </Link>
         </motion.div>
