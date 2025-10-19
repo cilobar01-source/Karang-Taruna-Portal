@@ -1,7 +1,5 @@
-"use client";
-
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth";
+import Providers from "./providers"; // file baru untuk AuthProvider
 
 export const metadata = {
   title: "Portal Karang Taruna Cilosari Barat",
@@ -12,7 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="id">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
