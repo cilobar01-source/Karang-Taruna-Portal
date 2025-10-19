@@ -1,35 +1,83 @@
 "use client";
-import { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import UploadButton from '../components/UploadButton';
-import { auth, db } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { collection, addDoc, updateDoc, serverTimestamp, getDocs, orderBy, query, deleteDoc, doc, getDoc } from 'firebase/firestore';
-import toast from 'react-hot-toast';
-const CAN = role => ['super_admin','ketua','sekretaris'].includes(role);
-export default function BeritaPanel(){
-  const [user,setUser]=useState(null); const [role,setRole]=useState('anggota');
-  const [judul,setJudul]=useState(''); const [isi,setIsi]=useState(''); const [foto,setFoto]=useState([]);
-  const [list,setList]=useState([]); const [editId,setEditId]=useState('');
-  useEffect(()=>{const unsub=onAuthStateChanged(auth, async (u)=>{if(!u){window.location.href='/login';return;}setUser(u);const s=await getDoc(doc(db,'users',u.uid));setRole(s.exists()? (s.data().role||'anggota'):'anggota');loadList();});return ()=>unsub()},[]);
-  const loadList=async()=>{const s=await getDocs(query(collection(db,'berita'),orderBy('createdAt','desc')));setList(s.docs.map(d=>({id:d.id,...d.data()})));};
-  const reset=()=>{setJudul('');setIsi('');setFoto([]);setEditId('')};
-  const save=async()=>{try{if(!CAN(role)) return toast.error('Akses ditolak');if(!judul||!isi) return toast('Lengkapi judul & isi');if(editId){await updateDoc(doc(db,'berita',editId),{judul,isi, ...(foto.length?{foto}:{})});toast.success('Diperbarui')}else{await addDoc(collection(db,'berita'),{judul,isi,foto,penulis:user?.email||'anonim',createdAt:serverTimestamp()});toast.success('Ditambahkan')}reset();loadList()}catch(e){toast.error(e.message)}};
-  const hapus=async(id)=>{if(!CAN(role)) return toast.error('Akses ditolak');if(!confirm('Hapus berita?'))return;await deleteDoc(doc(db,'berita',id));toast.success('Terhapus');loadList()};
-  const edit=(b)=>{setEditId(b.id);setJudul(b.judul||'');setIsi(b.isi||'');};
-  if(!user) return <main className='container'><p className='note'>Memuat...</p></main>;
-  return(<div className='dashboard'><Sidebar role={role}/><div>
-    <div className='card'>
-      <h2>📰 Berita</h2>
-      <input placeholder='Judul' value={judul} onChange={e=>setJudul(e.target.value)} />
-      <textarea rows={6} placeholder='Isi berita' value={isi} onChange={e=>setIsi(e.target.value)} />
-      <UploadButton onUploaded={(urls)=>setFoto(urls)} />
-      {foto.length>0&&<p className='note'>{foto.length} foto siap diunggah</p>}
-      <div className='row'><button className='btn btn-primary' onClick={save} disabled={!CAN(role)}>{editId?'Perbarui':'Simpan'}</button>{editId&&<button className='btn btn-ghost' onClick={reset}>Batal</button>}</div>
+
+import { useState, useEffect } from "react";
+import { db, auth } from "@/lib/firebase";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+
+export default function BeritaPage() {
+  const [berita, setBerita] = useState([]);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (u) => {
+      if (!u) return (window.location.href = "/");
+      setUser(u);
+    });
+    loadBerita();
+  }, []);
+
+  async function loadBerita() {
+    const snap = await getDocs(query(collection(db, "berita"), orderBy("createdAt", "desc")));
+    setBerita(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }
+
+  async function handleSave(e) {
+    e.preventDefault();
+    const file = e.target.foto.files[0];
+    let foto = "";
+    if (file) foto = await uploadToCloudinary(file);
+    await addDoc(collection(db, "berita"), {
+      judul: e.target.judul.value,
+      isi: e.target.isi.value,
+      foto,
+      penulis: user?.email,
+      createdAt: serverTimestamp(),
+    });
+    e.target.reset();
+    loadBerita();
+  }
+
+  async function handleDelete(id) {
+    if (!confirm("Hapus berita ini?")) return;
+    await deleteDoc(doc(db, "berita", id));
+    loadBerita();
+  }
+
+  return (
+    <div className="p-4 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold text-blue-900 mb-4">📰 Berita</h1>
+
+      <form onSubmit={handleSave} className="bg-white p-4 rounded-lg shadow mb-6">
+        <input name="judul" placeholder="Judul Berita" className="border p-2 w-full mb-2" />
+        <textarea name="isi" placeholder="Isi Berita" className="border p-2 w-full mb-2"></textarea>
+        <input type="file" name="foto" accept="image/*" className="mb-2" />
+        <button className="bg-blue-900 text-white px-4 py-2 rounded-md">Simpan</button>
+      </form>
+
+      <div className="grid gap-3">
+        {berita.map((b) => (
+          <div key={b.id} className="bg-white p-4 rounded-lg shadow">
+            {b.foto && <img src={b.foto} className="w-full rounded mb-2" />}
+            <h3 className="font-bold">{b.judul}</h3>
+            <p className="whitespace-pre-line">{b.isi}</p>
+            <small className="text-gray-600">✍️ {b.penulis}</small>
+            <button onClick={() => handleDelete(b.id)} className="text-red-600 ml-3">
+              🗑️ Hapus
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
-    <div className='grid grid-2'>
-      {list.map(b=>(<div key={b.id} className='card'>{Array.isArray(b.foto)&&b.foto[0]&&<img className='thumb' src={b.foto[0]} alt={b.judul}/>}<h3>{b.judul}</h3><p>{(b.isi||'').slice(0,160)}...</p><a className='btn btn-ghost' href={`/berita/${b.id}`}>Selengkapnya</a>{CAN(role)&&(<><button className='btn btn-ghost' onClick={()=>edit(b)}>Edit</button><button className='btn btn-ghost' onClick={()=>hapus(b.id)}>Hapus</button></>)}</div>))}
-      {list.length===0&&<p className='note'>Belum ada berita.</p>}
-    </div>
-  </div></div>);
+  );
 }
