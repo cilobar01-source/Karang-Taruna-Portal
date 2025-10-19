@@ -1,0 +1,36 @@
+.anggota-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.anggota-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.anggota-foto {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.role-select {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.4rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-weight: 600;
+}
+
+.role-badge {
+  background: var(--biru);
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  border-radius: 6px;
+  margin-top: 0.4rem;
+}
