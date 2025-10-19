@@ -14,10 +14,20 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState("dark");
   const canvasRef = useRef(null);
   const particles = useRef([]);
 
-  // ---- Partikel cahaya emas (canvas) ----
+  /* ==== THEME DETECTOR ==== */
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: light)");
+    const listener = () => setTheme(media.matches ? "light" : "dark");
+    listener();
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, []);
+
+  /* ==== PARTICLE BACKGROUND ==== */
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -46,23 +56,23 @@ export default function LoginPage() {
       particles.current.forEach((p) => {
         p.x += p.dx;
         p.y += p.dy;
-
         if (p.x < 0 || p.x > w) p.dx *= -1;
         if (p.y < 0 || p.y > h) p.dy *= -1;
-
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(246,196,69,${p.opacity})`;
+        ctx.fillStyle =
+          theme === "dark"
+            ? `rgba(246,196,69,${p.opacity})`
+            : `rgba(160,120,30,${p.opacity})`;
         ctx.fill();
       });
       requestAnimationFrame(animate);
     };
     animate();
-
     return () => window.removeEventListener("resize", resize);
-  }, []);
+  }, [theme]);
 
-  // ---- Membuat dokumen user di Firestore ----
+  /* ==== FIREBASE CREATE USER DOC ==== */
   const ensureUserDoc = async (uid, email) => {
     const uref = doc(db, "users", uid);
     const snap = await getDoc(uref);
@@ -75,7 +85,7 @@ export default function LoginPage() {
     }
   };
 
-  // ---- Login, Register, Reset ----
+  /* ==== AUTH ACTIONS ==== */
   const doLogin = async () => {
     setLoading(true);
     try {
@@ -114,7 +124,28 @@ export default function LoginPage() {
     }
   };
 
-  // ---- Tampilan utama ----
+  /* ==== COLOR THEMES ==== */
+  const color = {
+    gold: theme === "dark" ? "#f6c445" : "#c49a1b",
+    bgTop:
+      theme === "dark"
+        ? "rgba(246,196,69,0.15)"
+        : "rgba(246,196,69,0.35)",
+    bgBase:
+      theme === "dark"
+        ? "rgba(11,19,43,1)"
+        : "rgba(255,250,245,1)",
+    card:
+      theme === "dark"
+        ? "rgba(17,25,40,0.8)"
+        : "rgba(255,255,255,0.8)",
+    border:
+      theme === "dark"
+        ? "1px solid rgba(246,196,69,0.4)"
+        : "1px solid rgba(160,120,30,0.4)",
+  };
+
+  /* ==== UI ==== */
   return (
     <main
       style={{
@@ -124,11 +155,10 @@ export default function LoginPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background:
-          "radial-gradient(circle at top, rgba(246,196,69,0.15), rgba(11,19,43,1) 70%)",
+        background: `radial-gradient(circle at top, ${color.bgTop}, ${color.bgBase} 70%)`,
+        color: theme === "dark" ? "#fff" : "#1e1e1e",
       }}
     >
-      {/* Canvas Partikel */}
       <canvas
         ref={canvasRef}
         style={{
@@ -139,7 +169,6 @@ export default function LoginPage() {
         }}
       ></canvas>
 
-      {/* Card Login */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -150,10 +179,10 @@ export default function LoginPage() {
           maxWidth: "460px",
           padding: "2rem",
           borderRadius: "20px",
-          background:
-            "rgba(17,25,40,0.8) linear-gradient(145deg, rgba(246,196,69,0.05), rgba(11,19,43,0.95))",
-          boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
-          border: "1px solid rgba(246,196,69,0.4)",
+          background: color.card,
+          boxShadow:
+            "0 10px 40px rgba(0,0,0,0.3), 0 0 20px rgba(246,196,69,0.1)",
+          border: color.border,
           backdropFilter: "blur(10px)",
         }}
       >
@@ -163,16 +192,18 @@ export default function LoginPage() {
           transition={{ delay: 0.2 }}
           style={{
             textAlign: "center",
-            color: "var(--gold)",
+            color: color.gold,
             fontSize: "1.8rem",
             marginBottom: "0.5rem",
           }}
         >
           Portal Karang Taruna
         </motion.h1>
-
-        <p className="note" style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          RT01 / RW08 - Cilosari Barat, Kemijen
+        <p
+          className="note"
+          style={{ textAlign: "center", marginBottom: "1.5rem" }}
+        >
+          RT01/RW08 Cilosari Barat - Kemijen
         </p>
 
         <input
@@ -222,9 +253,9 @@ export default function LoginPage() {
         <p
           style={{
             textAlign: "center",
-            color: "var(--muted)",
             marginTop: "1.2rem",
             fontSize: "0.85rem",
+            opacity: 0.7,
           }}
         >
           © 2025 Karang Taruna Cilosari Barat
