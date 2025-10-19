@@ -2,17 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, doc, updateDoc, orderBy, query } from "firebase/firestore";
 import { useAuth } from "@/lib/auth";
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import "@/styles/dashboard.css";
 
 export default function AnggotaPage() {
-  const { user, role } = useAuth();
+  const { user, role, loading } = useAuth();
   const [anggota, setAnggota] = useState([]);
 
   useEffect(() => {
-    if (user) loadAnggota();
-  }, [user]);
+    if (!loading && user) loadAnggota();
+  }, [user, loading]);
 
   const loadAnggota = async () => {
     const q = query(collection(db, "users"), orderBy("email"));
@@ -31,6 +38,8 @@ export default function AnggotaPage() {
     loadAnggota();
   };
 
+  if (loading) return <p>Memuat data pengguna...</p>;
+
   return (
     <div className="panel">
       <h2>👥 Manajemen Anggota</h2>
@@ -40,7 +49,7 @@ export default function AnggotaPage() {
           <div key={a.id} className="card">
             <div className="anggota-info">
               <img
-                src={a.foto || "/icons/icon-128x128.png"}
+                src={a.foto || "/icons/icon-192x192.png"}
                 alt={a.nama || a.email}
                 className="anggota-foto"
               />
@@ -50,9 +59,7 @@ export default function AnggotaPage() {
               </div>
             </div>
 
-            <p className="role-badge">
-              🏷️ {a.role || "anggota"}
-            </p>
+            <p className="role-badge">🏷️ {a.role || "anggota"}</p>
 
             {role === "super_admin" && (
               <select
