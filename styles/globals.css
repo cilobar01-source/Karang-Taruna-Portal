@@ -1,13 +1,12 @@
-/* ===================== 🌐 GLOBALS ===================== */
+/* ======== 🌐 GLOBAL STYLE ======== */
 :root {
   --biru: #0e4c92;
   --biru-tua: #09244d;
   --emas: #f6c445;
-  --abu: #f3f4f6;
-  --putih: #fff;
   --gelap: #0d1117;
+  --putih: #ffffff;
   --radius: 10px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -20,12 +19,12 @@
 html,
 body {
   min-height: 100%;
-  background: linear-gradient(145deg, var(--biru-tua), var(--gelap));
+  background: radial-gradient(circle at top left, #11356b, #0a1733);
   color: var(--putih);
   font-size: 15px;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 header {
   background: linear-gradient(90deg, var(--biru), #1a6ac2);
   color: var(--putih);
@@ -41,7 +40,7 @@ header h1 {
   font-weight: 700;
 }
 
-/* LINK DAN TOMBOL */
+/* ===== LINKS ===== */
 a {
   color: var(--emas);
   text-decoration: none;
@@ -52,6 +51,7 @@ a:hover {
   color: var(--putih);
 }
 
+/* ===== BUTTONS ===== */
 button {
   border: none;
   border-radius: var(--radius);
@@ -83,7 +83,7 @@ button.btn-outline:hover {
   color: var(--biru-tua);
 }
 
-/* CARD */
+/* ===== CARD ===== */
 .card {
   background: linear-gradient(180deg, #11356b, #0d2040);
   border-radius: var(--radius);
@@ -97,7 +97,7 @@ button.btn-outline:hover {
   transform: translateY(-3px);
 }
 
-/* INPUT */
+/* ===== INPUT ===== */
 input,
 select,
 textarea {
@@ -116,7 +116,7 @@ textarea:focus {
   box-shadow: 0 0 5px var(--emas);
 }
 
-/* GRID */
+/* ===== GRID ===== */
 .grid {
   display: grid;
   gap: 1rem;
@@ -126,7 +126,7 @@ textarea:focus {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-/* FOOTER */
+/* ===== FOOTER ===== */
 footer {
   text-align: center;
   padding: 1.5rem 0;
@@ -135,7 +135,7 @@ footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ANIMASI */
+/* ===== ANIMASI ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -151,7 +151,7 @@ footer {
   animation: fadeIn 0.8s ease forwards;
 }
 
-/* MOBILE */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   header {
     flex-direction: column;
